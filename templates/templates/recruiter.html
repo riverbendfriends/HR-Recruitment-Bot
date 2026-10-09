@@ -1,1 +1,122 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recruiteroverzicht</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f3f4f8; color: #1f2430; padding: 24px 16px; }
+  .wrap { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  header { background: linear-gradient(135deg, #5b6cf0, #7c4dbd); color: #fff; border-radius: 14px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header h1 { font-size: 21px; }
+  header p { font-size: 14px; opacity: .92; margin-top: 4px; }
+  header a { color: #fff; font-size: 14px; }
+  .notitie { background: #fff7e0; border: 1px solid #f1d98a; color: #6b5200; border-radius: 10px; padding: 12px 16px; font-size: 14px; line-height: 1.45; }
+  .tellers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .teller { background: #fff; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .teller b { font-size: 26px; display: block; }
+  .teller span { font-size: 13px; color: #6b7280; }
+  .card { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; padding: 12px 14px; background: #f8f9fc; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; }
+  td { padding: 12px 14px; border-top: 1px solid #eceef4; vertical-align: middle; }
+  tr.rij { cursor: pointer; }
+  tr.rij:hover td { background: #fafbff; }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .geschikt { background: #dcf5e4; color: #146c2e; }
+  .twijfel { background: #fff0cc; color: #8a5a00; }
+  .minder_geschikt { background: #fde0de; color: #a3231b; }
+  .mini { display: inline-flex; gap: 3px; }
+  .mini i { width: 22px; height: 22px; border-radius: 5px; font-style: normal; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; background: #eceefe; color: #3b46b8; }
+  .mini i.l { background: #fde0de; color: #a3231b; }
+  .mini i.h { background: #dcf5e4; color: #146c2e; }
+  .detail td { background: #fafbff; padding: 18px 20px; }
+  .comp { display: grid; grid-template-columns: 170px 1fr; gap: 6px 16px; padding: 10px 0; border-bottom: 1px solid #eceef4; font-size: 14px; line-height: 1.45; }
+  .comp:last-of-type { border-bottom: 0; }
+  .comp .nm { font-weight: 600; }
+  .comp .sc { color: #5b6cf0; font-weight: 700; }
+  .klein { color: #6b7280; font-size: 13px; }
+  .samen { margin-top: 12px; font-size: 14px; line-height: 1.5; }
+  .acties { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button { border: 0; border-radius: 8px; padding: 9px 16px; font-size: 14px; font-weight: 600; cursor: pointer; background: #eceefe; color: #3b46b8; }
+  button:hover { background: #dfe2fb; }
+  button.actief { background: #5b6cf0; color: #fff; }
+  button.gevaar { background: #fde0de; color: #a3231b; }
+  .leeg { padding: 40px; text-align: center; color: #6b7280; }
+  .verborgen { display: none; }
+  @media (max-width: 700px) { .comp { grid-template-columns: 1fr; } .tellers { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Recruiteroverzicht: Junior Kredietanalist</h1>
+      <p>Kandidaten gesorteerd van hoogste naar laagste score</p>
+    </div>
+    <a href="/">Naar kandidaatscherm</a>
+  </header>
+  <div class="notitie"><b>Voorlopig AI-advies.</b> De eindkeuze ligt bij jou. Klik op een kandidaat voor bewijs per competentie en gebruik de knoppen om jouw besluit vast te leggen. Het advies is gebaseerd op de antwoorden, niet op naam, leeftijd, geslacht of school.</div>
+  <div class="tellers">
+    <div class="teller"><b id="nG">0</b><span>Geschikt</span></div>
+    <div class="teller"><b id="nT">0</b><span>Twijfel</span></div>
+    <div class="teller"><b id="nM">0</b><span>Minder geschikt</span></div>
+  </div>
+  <div class="card" id="tabelKaart"></div>
+  <div style="display:flex; gap:8px">
+    <button onclick="laad()">Ververs</button>
+    <button class="gevaar" onclick="wis()">Wis testdata</button>
+  </div>
+</div>
 
+<script>
+  const LABEL = { geschikt: "Geschikt", twijfel: "Twijfel", minder_geschikt: "Minder geschikt" };
+  const BESLUIT = { uitnodigen: "Uitnodigen", twijfel: "Twijfel", afwijzen: "Afwijzen" };
+  let open = null;
+
+  function esc(s) { const d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
+
+  function laad() {
+    fetch("/api/kandidaten").then(r => r.json()).then(teken);
+  }
+
+  function teken(lijst) {
+    document.getElementById("nG").textContent = lijst.filter(k => k.advies === "geschikt").length;
+    document.getElementById("nT").textContent = lijst.filter(k => k.advies === "twijfel").length;
+    document.getElementById("nM").textContent = lijst.filter(k => k.advies === "minder_geschikt").length;
+    const kaart = document.getElementById("tabelKaart");
+    if (!lijst.length) { kaart.innerHTML = '<div class="leeg">Nog geen kandidaten. Laat iemand de screening invullen op het kandidaatscherm.</div>'; return; }
+    let h = '<table><thead><tr><th>ID</th><th>Kandidaat</th><th>Advies</th><th>Gem.</th><th>Scores</th><th>Jouw besluit</th></tr></thead><tbody>';
+    lijst.forEach(k => {
+      const minis = k.competenties.map(c => '<i class="' + (c.score >= 4 ? "h" : c.score <= 2 ? "l" : "") + '" title="' + esc(c.naam) + '">' + c.score + '</i>').join("");
+      h += '<tr class="rij" onclick="toon(\'' + k.id + '\')"><td>' + esc(k.id) + '</td><td><b>' + esc(k.naam) + '</b><div class="klein">' + esc(k.tijd) + '</div></td>'
+        + '<td><span class="badge ' + k.advies + '">' + LABEL[k.advies] + '</span></td><td><b>' + k.gemiddelde.toFixed(1) + '</b></td>'
+        + '<td><span class="mini">' + minis + '</span></td><td>' + (k.mens_besluit ? esc(BESLUIT[k.mens_besluit]) : '<span class="klein">nog niet beslist</span>') + '</td></tr>';
+      if (open === k.id) {
+        h += '<tr class="detail"><td colspan="6">';
+        k.competenties.forEach(c => {
+          h += '<div class="comp"><div class="nm">' + esc(c.naam) + ' <span class="sc">' + c.score + '/5</span><div class="klein">vertrouwen: ' + esc(c.vertrouwen) + '</div></div>'
+            + '<div>' + esc(c.bewijs) + (c.open_vraag ? '<div class="klein">Open vraag: ' + esc(c.open_vraag) + '</div>' : '') + '</div></div>';
+        });
+        h += '<div class="samen"><b>Sterk:</b> ' + esc(k.sterk) + '<br><b>Risico:</b> ' + esc(k.risico) + '</div>';
+        h += '<div class="klein" style="margin-top:8px">Naam naar AI gestuurd: ' + (k.naam_naar_ai ? "ja (testmodus)" : "nee (blind)") + '</div>';
+        h += '<div class="acties"><span class="klein">Jouw besluit:</span>';
+        Object.keys(BESLUIT).forEach(b => { h += '<button class="' + (k.mens_besluit === b ? "actief" : "") + '" onclick="event.stopPropagation(); beslis(\'' + k.id + '\', \'' + b + '\')">' + BESLUIT[b] + '</button>'; });
+        h += '</div></td></tr>';
+      }
+    });
+    kaart.innerHTML = h + '</tbody></table>';
+  }
+
+  function toon(id) { open = open === id ? null : id; laad(); }
+  function beslis(id, b) {
+    fetch("/beslis/" + id, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ besluit: b }) }).then(laad);
+  }
+  function wis() {
+    if (confirm("Alle testkandidaten wissen?")) fetch("/wis", { method: "POST" }).then(() => { open = null; laad(); });
+  }
+  laad();
+</script>
+</body>
+</html>
