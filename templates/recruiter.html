@@ -3,68 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
 <title>Recruiteroverzicht</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg: #f5f5f7; --ink: #1d1d1f; --mut: #6e6e73; --kaart: #ffffff; --lijn: rgba(0,0,0,.09); --blauw: #0071e3; --glas: rgba(255,255,255,.72);
+    --grijs: rgba(120,120,128,.14); --rij: #f9f9fb; --schaduw: 0 1px 2px rgba(0,0,0,.04), 0 8px 30px rgba(0,0,0,.06);
+    --groen: #1e8e3e; --groenbg: rgba(52,199,89,.16); --geel: #a05a00; --geelbg: rgba(255,159,10,.18); --rood: #c9302c; --roodbg: rgba(255,69,58,.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000; --ink: #f5f5f7; --mut: #a1a1a6; --kaart: #1c1c1e; --lijn: rgba(255,255,255,.12); --blauw: #2997ff; --glas: rgba(28,28,30,.72);
+      --grijs: rgba(120,120,128,.28); --rij: #232326; --schaduw: 0 1px 2px rgba(0,0,0,.3), 0 8px 30px rgba(0,0,0,.4);
+      --groen: #30d158; --groenbg: rgba(48,209,88,.2); --geel: #ffb340; --geelbg: rgba(255,159,10,.22); --rood: #ff6961; --roodbg: rgba(255,69,58,.22);
+    }
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f3f4f8; color: #1f2430; padding: 24px 16px; }
-  .wrap { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-  header { background: linear-gradient(135deg, #5b6cf0, #7c4dbd); color: #fff; border-radius: 14px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  header h1 { font-size: 21px; }
-  header p { font-size: 14px; opacity: .92; margin-top: 4px; }
-  header a { color: #fff; font-size: 14px; }
-  .notitie { background: #fff7e0; border: 1px solid #f1d98a; color: #6b5200; border-radius: 10px; padding: 12px 16px; font-size: 14px; line-height: 1.45; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; letter-spacing: -0.011em; }
+  :focus-visible { outline: 3px solid color-mix(in srgb, var(--blauw) 55%, transparent); outline-offset: 2px; border-radius: 10px; }
+  button { font: inherit; color: inherit; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .balk { position: sticky; top: 0; z-index: 5; height: 52px; display: flex; align-items: center; justify-content: center; background: var(--glas); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid var(--lijn); font-size: 15px; font-weight: 600; }
+  .balk a { position: absolute; right: 16px; font-size: 14px; font-weight: 500; color: var(--blauw); text-decoration: none; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 36px 16px 60px; display: flex; flex-direction: column; gap: 18px; }
+  h1 { font-size: clamp(28px, 5vw, 36px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+  .sub { color: var(--mut); font-size: 16px; margin-top: 6px; }
+  .notitie { color: var(--mut); font-size: 14px; line-height: 1.5; background: var(--kaart); border-radius: 16px; padding: 14px 18px; box-shadow: var(--schaduw); }
+  .notitie b { color: var(--ink); font-weight: 600; }
   .tellers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .teller { background: #fff; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
-  .teller b { font-size: 26px; display: block; }
-  .teller span { font-size: 13px; color: #6b7280; }
-  .card { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th { text-align: left; padding: 12px 14px; background: #f8f9fc; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; }
-  td { padding: 12px 14px; border-top: 1px solid #eceef4; vertical-align: middle; }
-  tr.rij { cursor: pointer; }
-  tr.rij:hover td { background: #fafbff; }
-  .badge { display: inline-block; padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; white-space: nowrap; }
-  .geschikt { background: #dcf5e4; color: #146c2e; }
-  .twijfel { background: #fff0cc; color: #8a5a00; }
-  .minder_geschikt { background: #fde0de; color: #a3231b; }
-  .mini { display: inline-flex; gap: 3px; }
-  .mini i { width: 22px; height: 22px; border-radius: 5px; font-style: normal; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; background: #eceefe; color: #3b46b8; }
-  .mini i.l { background: #fde0de; color: #a3231b; }
-  .mini i.h { background: #dcf5e4; color: #146c2e; }
-  .detail td { background: #fafbff; padding: 18px 20px; }
-  .comp { display: grid; grid-template-columns: 170px 1fr; gap: 6px 16px; padding: 10px 0; border-bottom: 1px solid #eceef4; font-size: 14px; line-height: 1.45; }
+  .teller { background: var(--kaart); border-radius: 20px; padding: 16px 18px; box-shadow: var(--schaduw); }
+  .teller b { font-size: 34px; font-weight: 700; letter-spacing: -0.03em; display: block; line-height: 1.1; }
+  .teller span { font-size: 14px; color: var(--mut); }
+  .teller.g b { color: var(--groen); } .teller.t b { color: var(--geel); } .teller.m b { color: var(--rood); }
+  .card { background: var(--kaart); border-radius: 20px; box-shadow: var(--schaduw); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; padding: 12px 16px; font-size: 13px; font-weight: 500; color: var(--mut); border-bottom: 1px solid var(--lijn); }
+  td { padding: 14px 16px; border-top: 1px solid var(--lijn); vertical-align: middle; }
+  tbody tr:first-child td { border-top: 0; }
+  tr.rij { cursor: pointer; transition: background .15s; }
+  tr.rij:hover td { background: var(--rij); }
+  .badge { display: inline-block; padding: 4px 11px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .geschikt { background: var(--groenbg); color: var(--groen); }
+  .twijfel { background: var(--geelbg); color: var(--geel); }
+  .minder_geschikt { background: var(--roodbg); color: var(--rood); }
+  .mini { display: inline-flex; gap: 4px; }
+  .mini i { width: 24px; height: 24px; border-radius: 8px; font-style: normal; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; background: var(--grijs); color: var(--mut); }
+  .mini i.l { background: var(--roodbg); color: var(--rood); }
+  .mini i.h { background: var(--groenbg); color: var(--groen); }
+  .detail td { background: var(--rij); padding: 20px 22px; }
+  .comp { display: grid; grid-template-columns: 180px 1fr; gap: 6px 18px; padding: 12px 0; border-bottom: 1px solid var(--lijn); font-size: 15px; line-height: 1.45; }
   .comp:last-of-type { border-bottom: 0; }
   .comp .nm { font-weight: 600; }
-  .comp .sc { color: #5b6cf0; font-weight: 700; }
-  .klein { color: #6b7280; font-size: 13px; }
-  .samen { margin-top: 12px; font-size: 14px; line-height: 1.5; }
-  .acties { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  button { border: 0; border-radius: 8px; padding: 9px 16px; font-size: 14px; font-weight: 600; cursor: pointer; background: #eceefe; color: #3b46b8; }
-  button:hover { background: #dfe2fb; }
-  button.actief { background: #5b6cf0; color: #fff; }
-  button.gevaar { background: #fde0de; color: #a3231b; }
-  .leeg { padding: 40px; text-align: center; color: #6b7280; }
-  .verborgen { display: none; }
-  @media (max-width: 700px) { .comp { grid-template-columns: 1fr; } .tellers { grid-template-columns: 1fr; } }
+  .comp .sc { color: var(--blauw); font-weight: 600; }
+  .klein { color: var(--mut); font-size: 13px; }
+  .samen { margin-top: 14px; font-size: 15px; line-height: 1.55; }
+  .acties { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .acties button, .onder button { border-radius: 999px; padding: 9px 18px; font-size: 14px; font-weight: 500; background: var(--grijs); transition: background .15s, transform .1s; }
+  .acties button:hover, .onder button:hover { background: color-mix(in srgb, var(--grijs) 70%, var(--ink) 8%); }
+  .acties button:active, .onder button:active { transform: scale(.97); }
+  button.actief { background: var(--blauw) !important; color: #fff; }
+  .onder { display: flex; gap: 10px; }
+  button.gevaar { color: var(--rood); }
+  .leeg { padding: 56px 24px; text-align: center; color: var(--mut); font-size: 16px; }
+  @media (max-width: 700px) { .comp { grid-template-columns: 1fr; } .tellers { grid-template-columns: 1fr; } thead th:nth-child(1), thead th:nth-child(5), thead th:nth-child(6), tr.rij td:nth-child(1), tr.rij td:nth-child(5), tr.rij td:nth-child(6) { display: none; } .detail td { padding: 16px; } .balk { justify-content: flex-start; padding-left: 16px; } .balk a { right: 16px; } }
 </style>
 </head>
 <body>
+<div class="balk"><span>Recruiteroverzicht</span><a href="/">Kandidaatscherm</a></div>
 <div class="wrap">
-  <header>
-    <div>
-      <h1>Recruiteroverzicht: Junior Kredietanalist</h1>
-      <p>Kandidaten gesorteerd van hoogste naar laagste score</p>
-    </div>
-    <a href="/">Naar kandidaatscherm</a>
-  </header>
-  <div class="notitie"><b>Voorlopig AI-advies.</b> De eindkeuze ligt bij jou. Klik op een kandidaat voor bewijs per competentie en gebruik de knoppen om jouw besluit vast te leggen. Het advies is gebaseerd op de antwoorden, niet op naam, leeftijd, geslacht of school.</div>
+  <div>
+    <h1>Junior Kredietanalist</h1>
+    <p class="sub">Kandidaten van hoogste naar laagste score</p>
+  </div>
+  <div class="notitie"><b>Voorlopig AI-advies.</b> De eindkeuze ligt bij jou. Open een kandidaat voor het bewijs per competentie en leg daarna jouw besluit vast. Het advies is gebaseerd op de antwoorden, niet op naam, leeftijd, geslacht of school.</div>
   <div class="tellers">
-    <div class="teller"><b id="nG">0</b><span>Geschikt</span></div>
-    <div class="teller"><b id="nT">0</b><span>Twijfel</span></div>
-    <div class="teller"><b id="nM">0</b><span>Minder geschikt</span></div>
+    <div class="teller g"><b id="nG">0</b><span>Geschikt</span></div>
+    <div class="teller t"><b id="nT">0</b><span>Twijfel</span></div>
+    <div class="teller m"><b id="nM">0</b><span>Minder geschikt</span></div>
   </div>
   <div class="card" id="tabelKaart"></div>
-  <div style="display:flex; gap:8px">
+  <div class="onder">
     <button onclick="laad()">Ververs</button>
     <button class="gevaar" onclick="wis()">Wis testdata</button>
   </div>
@@ -86,7 +105,7 @@
     document.getElementById("nT").textContent = lijst.filter(k => k.advies === "twijfel").length;
     document.getElementById("nM").textContent = lijst.filter(k => k.advies === "minder_geschikt").length;
     const kaart = document.getElementById("tabelKaart");
-    if (!lijst.length) { kaart.innerHTML = '<div class="leeg">Nog geen kandidaten. Laat iemand de screening invullen op het kandidaatscherm.</div>'; return; }
+    if (!lijst.length) { kaart.innerHTML = '<div class="leeg">Nog geen kandidaten. Laat iemand de screening doen op het kandidaatscherm.</div>'; return; }
     let h = '<table><thead><tr><th>ID</th><th>Kandidaat</th><th>Advies</th><th>Gem.</th><th>Scores</th><th>Jouw besluit</th></tr></thead><tbody>';
     lijst.forEach(k => {
       const minis = k.competenties.map(c => '<i class="' + (c.score >= 4 ? "h" : c.score <= 2 ? "l" : "") + '" title="' + esc(c.naam) + '">' + c.score + '</i>').join("");
@@ -100,8 +119,8 @@
             + '<div>' + esc(c.bewijs) + (c.open_vraag ? '<div class="klein">Open vraag: ' + esc(c.open_vraag) + '</div>' : '') + '</div></div>';
         });
         h += '<div class="samen"><b>Sterk:</b> ' + esc(k.sterk) + '<br><b>Risico:</b> ' + esc(k.risico) + '</div>';
-        h += '<div class="klein" style="margin-top:8px">Naam naar AI gestuurd: ' + (k.naam_naar_ai ? "ja (testmodus)" : "nee (blind)") + '</div>';
-        h += '<div class="acties"><span class="klein">Jouw besluit:</span>';
+        h += '<div class="klein" style="margin-top:10px">Naam naar AI gestuurd: ' + (k.naam_naar_ai ? "ja (testmodus)" : "nee (blind)") + '</div>';
+        h += '<div class="acties"><span class="klein">Jouw besluit</span>';
         Object.keys(BESLUIT).forEach(b => { h += '<button class="' + (k.mens_besluit === b ? "actief" : "") + '" onclick="event.stopPropagation(); beslis(\'' + k.id + '\', \'' + b + '\')">' + BESLUIT[b] + '</button>'; });
         h += '</div></td></tr>';
       }
